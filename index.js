@@ -28,6 +28,12 @@ async function run() {
     await client.connect();
     const visaCollection = client.db("VisaDb").collection("visas");
 
+    // Get All Visa
+    app.get('/visas', async(req, res)=>{
+      const allVisa = await visaCollection.find().toArray()
+      res.send(allVisa)
+    })
+
     // Post Visa From Add visa Component
     app.post('/visas', async(req, res)=>{
       const newVisa = req.body
