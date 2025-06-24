@@ -1,4 +1,4 @@
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const express = require('express')
 var cors = require('cors')
 const app = express()
@@ -32,6 +32,14 @@ async function run() {
     app.get('/visas', async(req, res)=>{
       const allVisa = await visaCollection.find().toArray()
       res.send(allVisa)
+    })
+
+    // Get Individual visa item using id
+    app.get('/visas/:id', async(req, res)=>{
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const newVisa = await visaCollection.find(query).toArray();
+      res.send(newVisa)
     })
 
     // Post Visa From Add visa Component
