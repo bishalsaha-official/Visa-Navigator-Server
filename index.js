@@ -30,30 +30,79 @@ async function run() {
     const appliedVisaCollection = client.db("VisaDb").collection("appliedVisa");
 
     // Get All Visa
-    app.get('/visas', async(req, res)=>{
+    app.get('/visas', async (req, res) => {
       const allVisa = await visaCollection.find().toArray()
       res.send(allVisa)
     })
 
     // Get Individual visa item using id
-    app.get('/visas/:id', async(req, res)=>{
+    app.get('/visas/:id', async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const newVisa = await visaCollection.find(query).toArray();
       res.send(newVisa)
     })
 
+    // Get My Application Visa data
+    app.get('/appliedvisa', async (req, res) => {
+      const allApplication = await appliedVisaCollection.find().toArray()
+      res.send(allApplication)
+    })
+
+    app.get('/appliedvisa/:id', async (req, res) => {
+      const id = req.params.id
+      const query = { _id: new ObjectId(id) };
+      const newApplication = await appliedVisaCollection.find(query).toArray();
+      res.send(newApplication)
+    })
+
     // Post Visa From Add visa Component
-    app.post('/visas', async(req, res)=>{
+    app.post('/visas', async (req, res) => {
       const newVisa = req.body
       const result = await visaCollection.insertOne(newVisa);
       res.send(result)
     })
 
     // Post Applied Visa
-    app.post('/appliedvisa', async(req, res)=>{
+    app.post('/appliedvisa', async (req, res) => {
       const newAppliedVisa = req.body
       const result = await appliedVisaCollection.insertOne(newAppliedVisa);
+      res.send(result)
+    })
+
+    // Update Item
+    app.put('/visas/:id', async (req, res) => {
+      const id = req.params.id
+      const updateData = req.body;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: {
+          photoUrl: updateData.photoUrl,
+          countryName: updateData.countryName,
+          visaType: updateData.visaType,
+          fee: updateData.fee,
+          processingTime: updateData.processingTime,
+          applicationMethod: updateData.applicationMethod,
+          visaValidity: updateData.visaValidity,
+        },
+      };
+      const result = await visaCollection.updateOne(filter, updateDoc, options);
+      res.send(result)
+    })
+
+    // Delete my added visa
+    app.delete('/visas/:id', async (req, res) => {
+      const id = req.params.id
+      const query = { _id: new ObjectId(id) };
+      const result = await visaCollection.deleteOne(query);
+      res.send(result)
+    })
+
+    app.delete('/appliedvisa/:id', async (req, res) => {
+      const id = req.params.id
+      const query = { _id: new ObjectId(id) };
+      const result = await appliedVisaCollection.deleteOne(query);
       res.send(result)
     })
 
